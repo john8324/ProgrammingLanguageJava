@@ -42,12 +42,12 @@ public class Application {
 
 		/* put your own tests here ....... */
 		/*
-		 * if your implementaion is correct, you can do the following with
+		 * if your implementation is correct, you can do the following with
 		 * polymorphic array accountList public Account[] accountList;
 		 * 
 		 * accountList = new Account[4];
 		 * 
-		 * // buid 4 different accounts in the same array accountList[0] = new
+		 * // build 4 different accounts in the same array accountList[0] = new
 		 * CheckingAccount("John Smith", 1500.0); accountList[1] = new
 		 * SavingAccount("William Hurt", 1200.0); accountList[2] = new
 		 * CDAccount("Woody Allison", 1000.0); accountList[3] = new
