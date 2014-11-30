@@ -25,6 +25,8 @@ class BankingException extends Exception {
 
 interface WithdrawableAccount {
 	double withdraw(double amount) throws BankingException;
+
+	double withdraw(double amount, Date withdrawDate) throws BankingException;
 }
 
 interface DepositableAccount {
@@ -51,19 +53,6 @@ public abstract class Account {
 	public double balance() {
 		return (accountBalance);
 	}
-
-//	public double deposit(double amount) throws BankingException {
-//		accountBalance += amount;
-//		return (accountBalance);
-//	}
-//
-//	abstract double withdraw(double amount, Date withdrawDate)
-//			throws BankingException;
-//
-//	public double withdraw(double amount) throws BankingException {
-//		Date withdrawDate = new Date();
-//		return (withdraw(amount, withdrawDate));
-//	}
 
 	abstract double computeInterest(Date interestDate) throws BankingException;
 
@@ -130,13 +119,12 @@ class CheckingAccount extends Account implements FullFunctionalAccount {
 	}
 
 	public double withdraw(double amount) throws BankingException {
-		// TODO Auto-generated method stub
-		return 0;
+		return withdraw(amount, new Date());
 	}
 
 	public double deposit(double amount) throws BankingException {
-		// TODO Auto-generated method stub
-		return 0;
+		accountBalance += amount;
+		return accountBalance;
 	}
 }
 
@@ -168,6 +156,7 @@ class SavingAccount extends Account implements FullFunctionalAccount {
 	}
 
 	public double deposit(double amount) throws BankingException {
+		accountBalance += amount;
 		// fee $1
 		// TODO The first three transaction per month are NO fee!
 		return --accountBalance;
@@ -206,8 +195,7 @@ class SavingAccount extends Account implements FullFunctionalAccount {
 	}
 
 	public double withdraw(double amount) throws BankingException {
-		// TODO Auto-generated method stub
-		return 0;
+		return withdraw(amount, new Date());
 	}
 }
 
@@ -219,6 +207,8 @@ class SavingAccount extends Account implements FullFunctionalAccount {
  * and withdrawals cost a $250 fee); at the end of the duration the interest
  * payments stop and you can withdraw w/o fee.
  */
+
+// TODO 12month fee250
 
 class CDAccount extends Account implements WithdrawableAccount {
 
@@ -269,6 +259,60 @@ class CDAccount extends Account implements WithdrawableAccount {
 	}
 
 	public double withdraw(double amount) throws BankingException {
+		return withdraw(amount, new Date());
+	}
+}
+
+/*
+ * Derived class: LoanAccount
+ * 
+ * Description: like a saving account, but the balance is "negative" (you owe
+ * the bank money, so a deposit will reduce the amount of the loan); you can't
+ * withdraw (i.e., loan more money) but of course you can deposit (i.e., pay off
+ * part of the loan).
+ */
+
+// TODO LoanAccount
+
+class LoanAccount extends Account implements DepositableAccount {
+
+	LoanAccount(String s, double firstDeposit) {
+		accountName = s;
+		accountBalance = firstDeposit;
+		accountInterestRate = 0.12;
+		openDate = new Date();
+		lastInterestDate = openDate;
+	}
+
+	LoanAccount(String s, double firstDeposit, Date firstDate) {
+		accountName = s;
+		accountBalance = firstDeposit;
+		accountInterestRate = 0.12;
+		openDate = firstDate;
+		lastInterestDate = openDate;
+	}
+
+	public double computeInterest(Date interestDate) throws BankingException {
+		if (interestDate.before(lastInterestDate)) {
+			throw new BankingException(
+					"Invalid date to compute interest for account name"
+							+ accountName);
+		}
+
+		int numberOfMonths = (int) ((interestDate.getTime() - lastInterestDate
+				.getTime()) / 86400000.0 / 30.0);
+		System.out.println("Number of months since last interest is "
+				+ numberOfMonths);
+		double interestEarned = (double) numberOfMonths / 12.0
+				* accountInterestRate * accountBalance;
+		System.out.println("Interest earned is " + interestEarned);
+		lastInterestDate = interestDate;
+		accountBalance += interestEarned;
+		return (accountBalance);
+	}
+
+	public double deposit(double amount) throws BankingException {
+		accountBalance += amount;
 		// TODO Auto-generated method stub
 		return 0;
 	}

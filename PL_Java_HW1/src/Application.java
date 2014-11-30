@@ -16,29 +16,29 @@ import java.util.*;
 public class Application {
 
 	public static void main(String args[]) {
-//		Account a;
-//		Date d;
-//		double ret;
-//
-//		a = new CheckingAccount("John Smith", 1500.0);
-//
-//		try {
-//			ret = a.withdraw(100.00);
-//			System.out.println("Account <" + a.name() + "> now has $" + ret
-//					+ " balance\n");
-//		} catch (Exception e) {
-//			stdExceptionPrinting(e, a.balance());
-//		}
-//
-//		a = new CheckingAccount("John Smith", 1500.0);
-//
-//		try {
-//			ret = a.withdraw(600.00);
-//			System.out.println("Account <" + a.name() + "> now has $" + ret
-//					+ " balance\n");
-//		} catch (Exception e) {
-//			stdExceptionPrinting(e, a.balance());
-//		}
+		// Account a;
+		// Date d;
+		// double ret;
+		//
+		// a = new CheckingAccount("John Smith", 1500.0);
+		//
+		// try {
+		// ret = a.withdraw(100.00);
+		// System.out.println("Account <" + a.name() + "> now has $" + ret
+		// + " balance\n");
+		// } catch (Exception e) {
+		// stdExceptionPrinting(e, a.balance());
+		// }
+		//
+		// a = new CheckingAccount("John Smith", 1500.0);
+		//
+		// try {
+		// ret = a.withdraw(600.00);
+		// System.out.println("Account <" + a.name() + "> now has $" + ret
+		// + " balance\n");
+		// } catch (Exception e) {
+		// stdExceptionPrinting(e, a.balance());
+		// }
 
 		/* put your own tests here ....... */
 
@@ -48,22 +48,21 @@ public class Application {
 		 */
 		Account[] accountList;
 
-		accountList = new Account[3];
+		accountList = new Account[4];
 
 		// build 4 different accounts in the same array
 		accountList[0] = new CheckingAccount("John Smith", 1500.0);
 		accountList[1] = new SavingAccount("William Hurt", 1200.0);
-		accountList[2] = new CDAccount("Woody Allison", 1000.0); // accountList[3]
-		// = new
-		// LoanAccount("Judi Foster", -1500.0);
+		accountList[2] = new CDAccount("Woody Allison", 1000.0);
+		accountList[3] = new LoanAccount("Judi Foster", -1500.0);
 
 		// compute interest for all accounts
 		for (int count = 0; count < accountList.length; count++) {
 			double newBalance;
 			try {
 				newBalance = accountList[count].computeInterest();
-				System.out.println("Account <" + accountList[count].name() + "> now has $"
-						+ newBalance + " balance\n");
+				System.out.println("Account <" + accountList[count].name()
+						+ "> now has $" + newBalance + " balance\n");
 			} catch (BankingException e) {
 				e.printStackTrace();
 			}
