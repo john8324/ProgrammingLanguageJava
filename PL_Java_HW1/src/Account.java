@@ -87,6 +87,10 @@ class CheckingAccount extends Account implements FullFunctionalAccount {
 		lastInterestDate = openDate;
 	}
 
+	public double withdraw(double amount) throws BankingException {
+		return withdraw(amount, new Date());
+	}
+
 	public double withdraw(double amount, Date withdrawDate)
 			throws BankingException {
 		// minimum balance is 1000, raise exception if violated
@@ -118,10 +122,6 @@ class CheckingAccount extends Account implements FullFunctionalAccount {
 		return (accountBalance);
 	}
 
-	public double withdraw(double amount) throws BankingException {
-		return withdraw(amount, new Date());
-	}
-
 	public double deposit(double amount) throws BankingException {
 		accountBalance += amount;
 		return accountBalance;
@@ -135,9 +135,10 @@ class CheckingAccount extends Account implements FullFunctionalAccount {
  * first three per month are free; no minimum balance.
  */
 
-// TODO The first three transaction per month are NO fee!
-
 class SavingAccount extends Account implements FullFunctionalAccount {
+
+	private Date thisMonthFirstTransacteDate;
+	private int thisMonthTransacteCount;
 
 	SavingAccount(String s, double firstDeposit) {
 		accountName = s;
@@ -145,6 +146,7 @@ class SavingAccount extends Account implements FullFunctionalAccount {
 		accountInterestRate = 0.12;
 		openDate = new Date();
 		lastInterestDate = openDate;
+		thisMonthTransacteCount = 0;
 	}
 
 	SavingAccount(String s, double firstDeposit, Date firstDate) {
@@ -153,25 +155,59 @@ class SavingAccount extends Account implements FullFunctionalAccount {
 		accountInterestRate = 0.12;
 		openDate = firstDate;
 		lastInterestDate = openDate;
+		thisMonthTransacteCount = 0;
+	}
+
+	private boolean hasThisMonthTransacte(Date transacteDate) {
+		if (thisMonthTransacteCount == 0) {
+			return false;
+		} else {
+			int numberOfMonths = (int) ((transacteDate.getTime() - thisMonthFirstTransacteDate
+					.getTime()) / 86400000.0 / 30.0);
+			if (numberOfMonths > 0) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+	}
+
+	private void updateThisMonthTransacte(Date transacteDate) {
+		if (hasThisMonthTransacte(transacteDate)) {
+			thisMonthTransacteCount++;
+		} else {
+			thisMonthFirstTransacteDate = transacteDate;
+			thisMonthTransacteCount = 1;
+		}
+	}
+	
+	private int fee(Date transacteDate){
+		return hasThisMonthTransacte(transacteDate) && thisMonthTransacteCount >= 3 ? 1 : 0;
 	}
 
 	public double deposit(double amount) throws BankingException {
-		accountBalance += amount;
+		Date now = new Date();
 		// fee $1
-		// TODO The first three transaction per month are NO fee!
-		return --accountBalance;
+		accountBalance += amount - fee(now);
+		updateThisMonthTransacte(now);
+		return accountBalance;
+	}
+
+	public double withdraw(double amount) throws BankingException {
+		return withdraw(amount, new Date());
 	}
 
 	public double withdraw(double amount, Date withdrawDate)
 			throws BankingException {
+		int f = fee(withdrawDate);
 		// fee $1, raise exception if violated
-		// TODO The first three transaction per month are NO fee!
-		if ((accountBalance - amount) < 1) {
+		if ((accountBalance - amount) < f) {
 			throw new BankingException("Underfraft from saving account name:"
 					+ accountName);
 		} else {
-			accountBalance -= amount;
-			return (accountBalance);
+			accountBalance -= amount + f;
+			updateThisMonthTransacte(withdrawDate);
+			return accountBalance;
 		}
 	}
 
@@ -193,10 +229,6 @@ class SavingAccount extends Account implements FullFunctionalAccount {
 		accountBalance += interestEarned;
 		return (accountBalance);
 	}
-
-	public double withdraw(double amount) throws BankingException {
-		return withdraw(amount, new Date());
-	}
 }
 
 /*
@@ -207,8 +239,6 @@ class SavingAccount extends Account implements FullFunctionalAccount {
  * and withdrawals cost a $250 fee); at the end of the duration the interest
  * payments stop and you can withdraw w/o fee.
  */
-
-// TODO 12month fee250
 
 class CDAccount extends Account implements WithdrawableAccount {
 
@@ -228,13 +258,21 @@ class CDAccount extends Account implements WithdrawableAccount {
 		lastInterestDate = openDate;
 	}
 
+	public double withdraw(double amount) throws BankingException {
+		return withdraw(amount, new Date());
+	}
+
 	public double withdraw(double amount, Date withdrawDate)
 			throws BankingException {
-		if ((accountBalance - amount) < 0) {
+		int numberOfMonths = (int) ((withdrawDate.getTime() - openDate
+				.getTime()) / 86400000.0 / 30.0);
+		// fee is 5%
+		double fee = numberOfMonths < 12 ? accountBalance * 0.05 : 0;
+		if ((accountBalance - amount) < fee) {
 			throw new BankingException("Underfraft from CD account name:"
 					+ accountName);
 		} else {
-			accountBalance -= amount;
+			accountBalance -= amount + fee;
 			return (accountBalance);
 		}
 	}
@@ -257,10 +295,6 @@ class CDAccount extends Account implements WithdrawableAccount {
 		accountBalance += interestEarned;
 		return (accountBalance);
 	}
-
-	public double withdraw(double amount) throws BankingException {
-		return withdraw(amount, new Date());
-	}
 }
 
 /*
@@ -272,9 +306,10 @@ class CDAccount extends Account implements WithdrawableAccount {
  * part of the loan).
  */
 
-// TODO LoanAccount
-
 class LoanAccount extends Account implements DepositableAccount {
+
+	private Date thisMonthFirstTransacteDate;
+	private int thisMonthTransacteCount;
 
 	LoanAccount(String s, double firstDeposit) {
 		accountName = s;
@@ -282,6 +317,7 @@ class LoanAccount extends Account implements DepositableAccount {
 		accountInterestRate = 0.12;
 		openDate = new Date();
 		lastInterestDate = openDate;
+		thisMonthTransacteCount = 0;
 	}
 
 	LoanAccount(String s, double firstDeposit, Date firstDate) {
@@ -290,6 +326,47 @@ class LoanAccount extends Account implements DepositableAccount {
 		accountInterestRate = 0.12;
 		openDate = firstDate;
 		lastInterestDate = openDate;
+		thisMonthTransacteCount = 0;
+	}
+
+	private boolean hasThisMonthTransacte(Date transacteDate) {
+		if (thisMonthTransacteCount == 0) {
+			return false;
+		} else {
+			int numberOfMonths = (int) ((transacteDate.getTime() - thisMonthFirstTransacteDate
+					.getTime()) / 86400000.0 / 30.0);
+			if (numberOfMonths > 0) {
+				return false;
+			} else {
+				return true;
+			}
+		}
+	}
+
+	private void updateThisMonthTransacte(Date transacteDate) {
+		if (hasThisMonthTransacte(transacteDate)) {
+			thisMonthTransacteCount++;
+		} else {
+			thisMonthFirstTransacteDate = transacteDate;
+			thisMonthTransacteCount = 1;
+		}
+	}
+	
+	private int fee(Date transacteDate){
+		return hasThisMonthTransacte(transacteDate) && thisMonthTransacteCount >= 3 ? 1 : 0;
+	}
+
+	public double deposit(double amount) throws BankingException {
+		Date now = new Date();
+		int f = fee(now);
+		if ((accountBalance + amount) > f) {
+			throw new BankingException(
+					"Deposit too much into loan account name:" + accountName);
+		} else {
+			accountBalance += amount - f;
+			updateThisMonthTransacte(now);
+			return accountBalance;
+		}
 	}
 
 	public double computeInterest(Date interestDate) throws BankingException {
@@ -309,11 +386,5 @@ class LoanAccount extends Account implements DepositableAccount {
 		lastInterestDate = interestDate;
 		accountBalance += interestEarned;
 		return (accountBalance);
-	}
-
-	public double deposit(double amount) throws BankingException {
-		accountBalance += amount;
-		// TODO Auto-generated method stub
-		return 0;
 	}
 }
