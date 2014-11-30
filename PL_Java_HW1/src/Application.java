@@ -16,29 +16,29 @@ import java.util.*;
 public class Application {
 
 	public static void main(String args[]) {
-		Account a;
-		Date d;
-		double ret;
-
-		a = new CheckingAccount("John Smith", 1500.0);
-
-		try {
-			ret = a.withdraw(100.00);
-			System.out.println("Account <" + a.name() + "> now has $" + ret
-					+ " balance\n");
-		} catch (Exception e) {
-			stdExceptionPrinting(e, a.balance());
-		}
-
-		a = new CheckingAccount("John Smith", 1500.0);
-
-		try {
-			ret = a.withdraw(600.00);
-			System.out.println("Account <" + a.name() + "> now has $" + ret
-					+ " balance\n");
-		} catch (Exception e) {
-			stdExceptionPrinting(e, a.balance());
-		}
+//		Account a;
+//		Date d;
+//		double ret;
+//
+//		a = new CheckingAccount("John Smith", 1500.0);
+//
+//		try {
+//			ret = a.withdraw(100.00);
+//			System.out.println("Account <" + a.name() + "> now has $" + ret
+//					+ " balance\n");
+//		} catch (Exception e) {
+//			stdExceptionPrinting(e, a.balance());
+//		}
+//
+//		a = new CheckingAccount("John Smith", 1500.0);
+//
+//		try {
+//			ret = a.withdraw(600.00);
+//			System.out.println("Account <" + a.name() + "> now has $" + ret
+//					+ " balance\n");
+//		} catch (Exception e) {
+//			stdExceptionPrinting(e, a.balance());
+//		}
 
 		/* put your own tests here ....... */
 

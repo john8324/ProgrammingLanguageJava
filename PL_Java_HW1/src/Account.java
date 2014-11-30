@@ -23,26 +23,15 @@ class BankingException extends Exception {
 	}
 }
 
-interface BasicAccount {
-	String name();
-
-	double balance();
-}
-
-interface WithdrawableAccount extends BasicAccount {
+interface WithdrawableAccount {
 	double withdraw(double amount) throws BankingException;
 }
 
-interface DepositableAccount extends BasicAccount {
+interface DepositableAccount {
 	double deposit(double amount) throws BankingException;
 }
 
-interface InterestableAccount extends BasicAccount {
-	double computeInterest() throws BankingException;
-}
-
-interface FullFunctionalAccount extends WithdrawableAccount,
-		DepositableAccount, InterestableAccount {
+interface FullFunctionalAccount extends WithdrawableAccount, DepositableAccount {
 }
 
 public abstract class Account {
@@ -63,18 +52,18 @@ public abstract class Account {
 		return (accountBalance);
 	}
 
-	public double deposit(double amount) throws BankingException {
-		accountBalance += amount;
-		return (accountBalance);
-	}
-
-	abstract double withdraw(double amount, Date withdrawDate)
-			throws BankingException;
-
-	public double withdraw(double amount) throws BankingException {
-		Date withdrawDate = new Date();
-		return (withdraw(amount, withdrawDate));
-	}
+//	public double deposit(double amount) throws BankingException {
+//		accountBalance += amount;
+//		return (accountBalance);
+//	}
+//
+//	abstract double withdraw(double amount, Date withdrawDate)
+//			throws BankingException;
+//
+//	public double withdraw(double amount) throws BankingException {
+//		Date withdrawDate = new Date();
+//		return (withdraw(amount, withdrawDate));
+//	}
 
 	abstract double computeInterest(Date interestDate) throws BankingException;
 
@@ -139,13 +128,23 @@ class CheckingAccount extends Account implements FullFunctionalAccount {
 		accountBalance += interestEarned;
 		return (accountBalance);
 	}
+
+	public double withdraw(double amount) throws BankingException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	public double deposit(double amount) throws BankingException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }
 
 /*
  * Derived class: SavingAccount
  * 
- * Description: monthly interest; fee of $1 for every transaction, except
- * the first three per month are free; no minimum balance.
+ * Description: monthly interest; fee of $1 for every transaction, except the
+ * first three per month are free; no minimum balance.
  */
 
 // TODO The first three transaction per month are NO fee!
@@ -169,7 +168,6 @@ class SavingAccount extends Account implements FullFunctionalAccount {
 	}
 
 	public double deposit(double amount) throws BankingException {
-		super.deposit(amount);
 		// fee $1
 		// TODO The first three transaction per month are NO fee!
 		return --accountBalance;
@@ -206,18 +204,23 @@ class SavingAccount extends Account implements FullFunctionalAccount {
 		accountBalance += interestEarned;
 		return (accountBalance);
 	}
+
+	public double withdraw(double amount) throws BankingException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
 }
 
 /*
  * Derived class: CDAccount
  * 
  * Description: monthly interest; fixed amount and duration (e.g., you can open
- * 1 12-month CD for $5000; for the next 12 months you can't deposit
- * anything and withdrawals cost a  $250 fee); at the end of the 
- * duration the interest payments stop and you can withdraw w/o fee.
+ * 1 12-month CD for $5000; for the next 12 months you can't deposit anything
+ * and withdrawals cost a $250 fee); at the end of the duration the interest
+ * payments stop and you can withdraw w/o fee.
  */
 
-class CDAccount extends Account implements FullFunctionalAccount {
+class CDAccount extends Account implements WithdrawableAccount {
 
 	CDAccount(String s, double firstDeposit) {
 		accountName = s;
@@ -233,11 +236,6 @@ class CDAccount extends Account implements FullFunctionalAccount {
 		accountInterestRate = 0.12;
 		openDate = firstDate;
 		lastInterestDate = openDate;
-	}
-
-	public double deposit(double amount) throws BankingException {
-		throw new BankingException("Cannot deposit into CD account name:"
-				+ accountName);
 	}
 
 	public double withdraw(double amount, Date withdrawDate)
@@ -269,5 +267,9 @@ class CDAccount extends Account implements FullFunctionalAccount {
 		accountBalance += interestEarned;
 		return (accountBalance);
 	}
-}
 
+	public double withdraw(double amount) throws BankingException {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+}
