@@ -207,3 +207,67 @@ class SavingAccount extends Account implements FullFunctionalAccount {
 		return (accountBalance);
 	}
 }
+
+/*
+ * Derived class: CDAccount
+ * 
+ * Description: monthly interest; fixed amount and duration (e.g., you can open
+ * 1 12-month CD for $5000; for the next 12 months you can't deposit
+ * anything and withdrawals cost a  $250 fee); at the end of the 
+ * duration the interest payments stop and you can withdraw w/o fee.
+ */
+
+class CDAccount extends Account implements FullFunctionalAccount {
+
+	CDAccount(String s, double firstDeposit) {
+		accountName = s;
+		accountBalance = firstDeposit;
+		accountInterestRate = 0.12;
+		openDate = new Date();
+		lastInterestDate = openDate;
+	}
+
+	CDAccount(String s, double firstDeposit, Date firstDate) {
+		accountName = s;
+		accountBalance = firstDeposit;
+		accountInterestRate = 0.12;
+		openDate = firstDate;
+		lastInterestDate = openDate;
+	}
+
+	public double deposit(double amount) throws BankingException {
+		throw new BankingException("Cannot deposit into CD account name:"
+				+ accountName);
+	}
+
+	public double withdraw(double amount, Date withdrawDate)
+			throws BankingException {
+		if ((accountBalance - amount) < 0) {
+			throw new BankingException("Underfraft from CD account name:"
+					+ accountName);
+		} else {
+			accountBalance -= amount;
+			return (accountBalance);
+		}
+	}
+
+	public double computeInterest(Date interestDate) throws BankingException {
+		if (interestDate.before(lastInterestDate)) {
+			throw new BankingException(
+					"Invalid date to compute interest for account name"
+							+ accountName);
+		}
+
+		int numberOfMonths = (int) ((interestDate.getTime() - lastInterestDate
+				.getTime()) / 86400000.0 / 30.0);
+		System.out.println("Number of months since last interest is "
+				+ numberOfMonths);
+		double interestEarned = (double) numberOfMonths / 12.0
+				* accountInterestRate * accountBalance;
+		System.out.println("Interest earned is " + interestEarned);
+		lastInterestDate = interestDate;
+		accountBalance += interestEarned;
+		return (accountBalance);
+	}
+}
+

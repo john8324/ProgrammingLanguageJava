@@ -41,23 +41,34 @@ public class Application {
 		}
 
 		/* put your own tests here ....... */
+
 		/*
 		 * if your implementation is correct, you can do the following with
-		 * polymorphic array accountList public Account[] accountList;
-		 * 
-		 * accountList = new Account[4];
-		 * 
-		 * // build 4 different accounts in the same array accountList[0] = new
-		 * CheckingAccount("John Smith", 1500.0); accountList[1] = new
-		 * SavingAccount("William Hurt", 1200.0); accountList[2] = new
-		 * CDAccount("Woody Allison", 1000.0); accountList[3] = new
-		 * LoanAccount("Judi Foster", -1500.0);
-		 * 
-		 * // compute interest for all accounts for (int count = 0; count <
-		 * accountList.length; count++) { double newBalance =
-		 * accountList[count].computeInterest(); System.out.println ("Account <"
-		 * + a.name() + "> now has $" + newBalance + " balance\n"); }
+		 * polymorphic array accountList
 		 */
+		Account[] accountList;
+
+		accountList = new Account[3];
+
+		// build 4 different accounts in the same array
+		accountList[0] = new CheckingAccount("John Smith", 1500.0);
+		accountList[1] = new SavingAccount("William Hurt", 1200.0);
+		accountList[2] = new CDAccount("Woody Allison", 1000.0); // accountList[3]
+		// = new
+		// LoanAccount("Judi Foster", -1500.0);
+
+		// compute interest for all accounts
+		for (int count = 0; count < accountList.length; count++) {
+			double newBalance;
+			try {
+				newBalance = accountList[count].computeInterest();
+				System.out.println("Account <" + accountList[count].name() + "> now has $"
+						+ newBalance + " balance\n");
+			} catch (BankingException e) {
+				e.printStackTrace();
+			}
+		}
+
 	}
 
 	static void stdExceptionPrinting(Exception e, double balance) {
