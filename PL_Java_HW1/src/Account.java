@@ -23,20 +23,24 @@ class BankingException extends Exception {
 	}
 }
 
-interface WithdrawableAccount {
-	double withdraw(double amount) throws BankingException;
+interface BaseAccount {
+	public String name();
+	public double balance();
+}
 
+interface WithdrawableAccount extends BaseAccount {
+	double withdraw(double amount) throws BankingException;
 	double withdraw(double amount, Date withdrawDate) throws BankingException;
 }
 
-interface DepositableAccount {
+interface DepositableAccount extends BaseAccount {
 	double deposit(double amount) throws BankingException;
 }
 
 interface FullFunctionalAccount extends WithdrawableAccount, DepositableAccount {
 }
 
-public abstract class Account {
+public abstract class Account implements BaseAccount {
 
 	// protected variables to store common attributes for every bank accounts
 	protected String accountName;
