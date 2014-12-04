@@ -287,11 +287,17 @@ class CDAccount extends Account implements WithdrawableAccount {
 					"Invalid date to compute interest for account name"
 							+ accountName);
 		}
-
 		int numberOfMonths = (int) ((interestDate.getTime() - lastInterestDate
 				.getTime()) / 86400000.0 / 30.0);
 		System.out.println("Number of months since last interest is "
 				+ numberOfMonths);
+		int numberOfOpenMonths = (int) ((interestDate.getTime() - openDate
+				.getTime()) / 86400000.0 / 30.0);
+		if(numberOfOpenMonths > 12){
+			numberOfMonths -= numberOfOpenMonths - 12;
+			System.out.println("Number of months that interest is actually calculated is "
+					+ numberOfMonths);
+		}
 		double interestEarned = (double) numberOfMonths / 12.0
 				* accountInterestRate * accountBalance;
 		System.out.println("Interest earned is " + interestEarned);

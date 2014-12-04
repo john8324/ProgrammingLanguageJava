@@ -174,7 +174,7 @@ public class Application {
 			sa.withdraw(100, d); // fee
 			System.out.println("Account <" + sa.name() + "> now has $"
 					+ sa.balance() + " balance\n");
-			
+
 			sa.withdraw(100);
 			System.out.println("Account <" + sa.name() + "> now has $"
 					+ sa.balance() + " balance\n");
@@ -182,6 +182,12 @@ public class Application {
 			stdExceptionPrinting(e, sa.balance());
 		}
 
+		CDAccount cd = new CDAccount("Cyan Dim", 2000, new Date(0));
+		try {
+			cd.computeInterest(); // 12 month interest
+		} catch (Exception e) {
+			stdExceptionPrinting(e, sa.balance());
+		}
 	}
 
 	static void stdExceptionPrinting(Exception e, double balance) {
